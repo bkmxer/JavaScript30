@@ -7,59 +7,65 @@
 <body>
 <canvas id="draw" width="800" height="800"></canvas>
 <script>
-const canvas = document.querySelector('#draw');
-const ctx = canvas.getContext('2d');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-ctx.strokeStyle = '#BADA55';
-ctx.lineJoin = 'round';
-ctx.lineCap = 'round';
-ctx.lineWidth = 100;
-// ctx.globalCompositeOperation = 'multiply';
+  const canvasElement = document.querySelector('#draw');
+  const context = canvasElement.getContext('2d');
 
-let isDrawing = false;
-let lastX = 0;
-let lastY = 0;
-let hue = 0;
-let direction = true;
+  canvasElement.width = window.innerWidth;
+  canvasElement.height = window.innerHeight;
 
-function draw(e) {
-  if (!isDrawing) return; // stop the fn from running when they are not moused down
-  console.log(e);
-  ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`;
-  ctx.beginPath();
-  // start from
-  ctx.moveTo(lastX, lastY);
-  // go to
-  ctx.lineTo(e.offsetX, e.offsetY);
-  ctx.stroke();
-  [lastX, lastY] = [e.offsetX, e.offsetY];
+  let activeDrawing = false;
+  let lastX = false;
+  let lastY = false;
+  let hue = 0;
+  let dirrection = true;
 
-  hue++;
-  if (hue >= 360) {
-    hue = 0;
-  }
-  if (ctx.lineWidth >= 100 || ctx.lineWidth <= 1) {
-    direction = !direction;
-  }
+  // canvas settings
+  context.strokeStyle = 'red';
+  context.lineJoin = 'round';
+  context.lineCap = 'round';
 
-  if(direction) {
-    ctx.lineWidth++;
-  } else {
-    ctx.lineWidth--;
-  }
+  canvasElement.addEventListener('mousemove', function(e){
+    if (!activeDrawing)  return;
+      context.strokeStyle = `hsl(${hue}, 100%, 50%)`;
+      context.beginPath();
+      context.moveTo(lastX, lastY);
+      context.lineTo(e.offsetX, e.offsetY);
+      context.stroke();
+      lastX = e.offsetX;
+      lastY = e.offsetY;
+      hue++;
 
-}
+      if (hue > 360) {
+        hue = 0;
+      }
 
-canvas.addEventListener('mousedown', (e) => {
-  isDrawing = true;
-  [lastX, lastY] = [e.offsetX, e.offsetY];
-});
+      if (context.lineWidth > 100 || context.lineWidth <= 1) {
+        dirrection = !dirrection;
+      }
 
+      if (dirrection) {
+        context.lineWidth++;
+      } else {
+        context.lineWidth--;
+      }
+  });
 
-canvas.addEventListener('mousemove', draw);
-canvas.addEventListener('mouseup', () => isDrawing = false);
-canvas.addEventListener('mouseout', () => isDrawing = false);
+  canvasElement.addEventListener('mousedown', function(e){
+    activeDrawing = true;
+    lastX = e.offsetX;
+    lastY = e.offsetY;
+  })
+
+  canvasElement.addEventListener('mouseup', function(e){
+    activeDrawing = false;
+    lastX = e.offsetX;
+    lastY = e.offsetY;
+  })
+
+  canvasElement.addEventListener('mouseout', function(e){
+    activeDrawing = false;
+  })
+
 
 </script>
 
